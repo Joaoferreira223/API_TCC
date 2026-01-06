@@ -3,13 +3,21 @@ FROM eclipse-temurin:17-jdk-alpine
 
 WORKDIR /app
 
-# Copia todo o projeto
-COPY . .
+# Copia apenas o necessário primeiro (melhor cache)
+COPY mvnw .
+COPY .mvn .mvn
+COPY pom.xml .
 
-# Builda a aplicação com Maven
+# Dá permissão de execução ao mvnw
+RUN chmod +x mvnw
+
+# Copia o código
+COPY src src
+
+# Build da aplicação
 RUN ./mvnw clean package -DskipTests
 
-# Copia o .jar gerado para ser executado
+# Renomeia o jar
 RUN cp target/*.jar app.jar
 
 EXPOSE 8080
